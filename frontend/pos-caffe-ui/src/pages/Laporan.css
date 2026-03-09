@@ -1,0 +1,493 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.laporan-page {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface-2: #f9f8f6;
+  --surface-3: #f0ede8;
+  --border: #e8e4dd;
+  --border-mid: #d9d4cc;
+  --ink: #1a1714;
+  --ink-mid: #3d3830;
+  --ink-soft: #7a7168;
+  --ink-muted: #b5afa6;
+  --accent: #e8341a;
+  --accent-soft: rgba(232, 52, 26, 0.08);
+  --positive: #1a9e6e;
+  --positive-soft: rgba(26, 158, 110, 0.08);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r: 14px;
+  --r-lg: 20px;
+  --t: 0.15s ease;
+
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  color: var(--ink);
+}
+
+/* ── Header ── */
+.laporan-page .laporan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 60px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.laporan-page .laporan-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.laporan-page .laporan-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(232, 52, 26, 0.15);
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+
+.laporan-page .laporan-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.laporan-page .laporan-sub {
+  font-size: 11px;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.laporan-page .range-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 4px;
+}
+
+.laporan-page .range-tab {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all var(--t);
+}
+
+.laporan-page .range-tab:hover {
+  color: var(--ink);
+}
+
+.laporan-page .range-tab.active {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+/* ── Content ── */
+.laporan-page .laporan-content {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Summary Cards ── */
+.laporan-page .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.laporan-page .summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.laporan-page .summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+
+.laporan-page .stat-accent::before {
+  background: var(--accent);
+}
+
+.laporan-page .stat-ink::before {
+  background: var(--ink);
+}
+
+.laporan-page .stat-positive::before {
+  background: var(--positive);
+}
+
+.laporan-page .stat-soft::before {
+  background: var(--border-mid);
+}
+
+.laporan-page .card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.laporan-page .card-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.laporan-page .card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.laporan-page .card-icon.stat-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.laporan-page .card-icon.stat-ink {
+  background: var(--surface-3);
+  color: var(--ink-mid);
+}
+
+.laporan-page .card-icon.stat-positive {
+  background: var(--positive-soft);
+  color: var(--positive);
+}
+
+.laporan-page .card-icon.stat-soft {
+  background: var(--surface-3);
+  color: var(--ink-soft);
+}
+
+.laporan-page .card-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.laporan-page .card-desc {
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+/* ── Row ── */
+.laporan-page .laporan-row {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 14px;
+}
+
+/* ── Panel ── */
+.laporan-page .panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.laporan-page .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.laporan-page .panel-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.laporan-page .panel-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-muted);
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+
+/* ── Orders Table ── */
+.laporan-page .orders-table-wrap {
+  overflow-x: auto;
+}
+
+.laporan-page .orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.laporan-page .orders-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.laporan-page .orders-table th.right,
+.laporan-page .orders-table td.right {
+  text-align: right;
+}
+
+.laporan-page .orders-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background var(--t);
+}
+
+.laporan-page .orders-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.laporan-page .orders-table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.laporan-page .orders-table td {
+  padding: 11px 16px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.laporan-page .order-id-cell {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+.laporan-page .order-table-cell {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.laporan-page .order-time-cell {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.laporan-page .order-total-cell {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.laporan-page .done-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--positive-soft);
+  color: var(--positive);
+  border: 1px solid rgba(26, 158, 110, 0.2);
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+/* ── Top Products ── */
+.laporan-page .top-products-list {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.laporan-page .top-product-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  background: var(--surface-2);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+}
+
+.laporan-page .rank-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  min-width: 20px;
+}
+
+.laporan-page .rank-num.top {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.laporan-page .top-product-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.laporan-page .top-product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.laporan-page .top-product-rev {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.laporan-page .top-product-qty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.laporan-page .qty-num-big {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.laporan-page .qty-label {
+  font-size: 9px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--font-mono);
+}
+
+.laporan-page .progress-bar-wrap {
+  margin-top: 5px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.laporan-page .progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* ── Panel empty ── */
+.laporan-page .panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 20px;
+  gap: 10px;
+}
+
+.laporan-page .panel-empty-text {
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── Skeleton ── */
+.laporan-page .skel {
+  background: linear-gradient(90deg, var(--surface-3) 25%, var(--border) 50%, var(--surface-3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .laporan-page .laporan-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  .laporan-page .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .laporan-page .laporan-content {
+    padding: 16px 16px;
+  }
+
+  .laporan-page .laporan-header {
+    padding: 0 16px;
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+}

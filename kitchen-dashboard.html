@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Kitchen Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #fd0000;
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .board {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .column {
+      flex: 1;
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .column h2 {
+      text-align: center;
+    }
+
+    .card {
+      background: #2c2c2c;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Kitchen Display System</h1>
+
+  <div class="board">
+
+    <div class="column">
+      <h2>PENDING</h2>
+      <div id="pending"></div>
+    </div>
+
+    <div class="column">
+      <h2>COOKING</h2>
+      <div id="cooking"></div>
+    </div>
+
+    <div class="column">
+      <h2>READY</h2>
+      <div id="ready"></div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <script>
+
+    const socket = io("http://localhost:5000");
+
+    socket.on("connect", () => {
+      console.log("Connected");
+    });
+
+    function renderOrder(order) {
+
+      const old = document.getElementById("order-" + order.id);
+      if (old) old.remove();
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.id = "order-" + order.id;
+
+      card.innerHTML = `
+    <b>Table ${order.table_number}</b><br>
+    Total: ${order.total}<br>
+    Status: ${order.status}<br>
+
+    ${order.status === "pending"
+          ? `<button onclick="updateStatus(${order.id},'cooking')">Start Cooking</button>`
+          : ""}
+
+    ${order.status === "cooking"
+          ? `<button onclick="updateStatus(${order.id},'ready')">Ready</button>`
+          : ""}
+  `;
+
+      document.getElementById(order.status).appendChild(card);
+
+    }
+
+    socket.on("newOrder", (order) => {
+
+      console.log("order baru", order);
+
+      renderOrder(order);
+
+    });
+
+    socket.on("orderUpdated", (order) => {
+
+      console.log("order updated", order);
+
+      const old = document.getElementById("order-" + order.id);
+
+      if (old) old.remove();
+
+      renderOrder(order);
+
+    });
+    function updateStatus(id, status) {
+
+      fetch(`http://localhost:5000/api/orders/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status })
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log("Status updated:", data);
+        })
+        .catch(err => {
+          console.error("Update gagal:", err);
+        });
+
+    }
+
+    async function loadOrders() {
+
+      const res = await fetch("http://localhost:5000/api/orders");
+      const orders = await res.json();
+
+      orders.forEach(order => {
+        renderOrder(order);
+      });
+
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+
+      loadOrders();
+
+    });
+  </script>
+
+</body>

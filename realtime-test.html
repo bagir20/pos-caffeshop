@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kitchen Monitor Test</title>
+</head>
+<body>
+
+<h1>Realtime Order Monitor</h1>
+
+<ul id="orders"></ul>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script>
+const socket = io("http://localhost:5000");
+
+const ordersList = document.getElementById("orders");
+
+socket.on("connect", () => {
+  console.log("Connected to server");
+});
+
+
+// ORDER BARU
+socket.on("newOrder", (order) => {
+  console.log("Order baru:", order);
+
+  const li = document.createElement("li");
+  li.id = "order-" + order.id;
+
+  li.innerHTML = `
+    Table: ${order.table_number} 
+    Total: ${order.total}
+    
+    <button onclick="updateStatus(${order.id}, 'cooking')">
+      Cooking
+    </button>
+
+    <button onclick="updateStatus(${order.id}, 'ready')">
+      Ready
+    </button>
+  `;
+
+  ordersList.appendChild(li);
+});
+
+
+// UPDATE STATUS REALTIME
+socket.on("orderUpdated", (order) => {
+  console.log("Order updated:", order);
+
+  const li = document.getElementById("order-" + order.id);
+
+  if(li){
+    li.innerHTML = `
+      Table: ${order.table_number}
+      Status: ${order.status}
+      
+      <button onclick="updateStatus(${order.id}, 'cooking')">
+        Cooking
+      </button>
+
+      <button onclick="updateStatus(${order.id}, 'ready')">
+        Ready
+      </button>
+    `;
+  }
+});
+
+
+// UPDATE STATUS API
+function updateStatus(id, status) {
+
+  fetch(`http://localhost:5000/api/orders/${id}/status`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ status })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Status updated:", data);
+  });
+
+}
+
+socket.on("newOrder", (order) => {
+  console.log("Order data:", order);
+});
+</script>
+
+</body>
+</html>
