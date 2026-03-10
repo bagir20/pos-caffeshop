@@ -8,7 +8,7 @@ exports.getProducts = async (req, res) => {
   products.name,
   products.price,
   products.image_url,
-  products.is_available,  -- ← tambah ini
+  products.is_available,
   categories.name AS category
 FROM products
 LEFT JOIN categories

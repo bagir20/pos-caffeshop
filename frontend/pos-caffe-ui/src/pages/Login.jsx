@@ -1,17 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Delete, Check, UtensilsCrossed } from "lucide-react";
 import axios from "axios";
 import "./Login.css";
 
-
 const PIN_LEN = 6;
-
-const NUMPAD = [
-  ["1","2","3"],
-  ["4","5","6"],
-  ["7","8","9"],
-  ["del","0","✓"],
-];
+const NUMPAD  = [["1","2","3"],["4","5","6"],["7","8","9"],["del","0","ok"]];
 
 export default function Login() {
   const [pin, setPin]         = useState("");
@@ -20,84 +15,47 @@ export default function Login() {
   const [shake, setShake]     = useState(false);
   const navigate              = useNavigate();
 
-  // Kalau sudah login, redirect langsung
- useEffect(() => {
-  axios.get('/api/auth/me', { withCredentials: true })
-    .then((res) => {
-      const role = res.data.user.role;
-      navigate(role === "admin" ? "/laporan" : "/order", { replace: true });
-    })
-    .catch(() => {
-      // belum login, tetap di halaman login
-    });
-}, [navigate]);
+  useEffect(() => {
+    axios.get("/api/auth/me", { withCredentials: true })
+      .then(res => navigate(res.data.user.role === "admin" ? "/laporan" : "/order", { replace: true }))
+      .catch(() => {});
+  }, [navigate]);
 
   const triggerError = (msg) => {
-    setError(msg);
-    setShake(true);
-    setPin("");
+    setError(msg); setShake(true); setPin("");
     setTimeout(() => setShake(false), 500);
   };
 
   const handleSubmit = useCallback(async (pinVal) => {
     if (pinVal.length < 4) return triggerError("PIN minimal 4 digit");
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     try {
-      // withCredentials agar httpOnly cookie diterima browser
-     const res = await axios.post('/api/auth/login', { pin: pinVal }, {
-  withCredentials: true,
-});
+      const res = await axios.post("/api/auth/login", { pin: pinVal }, { withCredentials: true });
       const { user } = res.data;
-
-      // Simpan hanya info non-sensitif (bukan token)
       localStorage.setItem("role", user.role);
       localStorage.setItem("name", user.name);
-
-      if (user.role === "admin") {
-        navigate("/laporan", { replace: true });
-      } else {
-        navigate("/order", { replace: true });
-      }
+      navigate(user.role === "admin" ? "/laporan" : "/order", { replace: true });
     } catch (err) {
-      const msg = err.response?.data?.message ?? "PIN salah";
-      triggerError(msg);
-    } finally {
-      setLoading(false);
-    }
+      triggerError(err.response?.data?.message ?? "PIN salah");
+    } finally { setLoading(false); }
   }, [navigate]);
 
   const handleKey = useCallback((key) => {
     if (loading) return;
     setError("");
-
-    if (key === "del") {
-      setPin((p) => p.slice(0, -1));
-      return;
-    }
-
-    if (key === "✓") {
-      handleSubmit(pin);
-      return;
-    }
-
+    if (key === "del") { setPin(p => p.slice(0,-1)); return; }
+    if (key === "ok")  { handleSubmit(pin); return; }
     if (pin.length >= PIN_LEN) return;
-
     const next = pin + key;
     setPin(next);
-
-    // Auto submit kalau sudah PIN_LEN digit
-    if (next.length === PIN_LEN) {
-      handleSubmit(next);
-    }
+    if (next.length === PIN_LEN) handleSubmit(next);
   }, [pin, loading, handleSubmit]);
 
-  // Keyboard support
   useEffect(() => {
     const handler = (e) => {
       if (e.key >= "0" && e.key <= "9") handleKey(e.key);
       else if (e.key === "Backspace")   handleKey("del");
-      else if (e.key === "Enter")       handleKey("✓");
+      else if (e.key === "Enter")       handleKey("ok");
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -105,101 +63,72 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <div className="login-card">
+      <motion.div className="login-card"
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}>
 
         {/* Header */}
         <div className="login-header">
-          <div className="login-logo">☕</div>
+          <div className="login-logo">
+            <span className="logo-mark">PC</span>
+          </div>
           <div className="login-title">Pos Caffe</div>
           <div className="login-subtitle">Masukkan PIN untuk melanjutkan</div>
         </div>
 
-        {/* Body */}
-        <div className="login-body">
+        {/* PIN dots */}
+        <motion.div className={`pin-dots ${shake ? "shake" : ""}`}
+          animate={shake ? { x: [0, -8, 8, -8, 8, 0] } : {}}
+          transition={{ duration: 0.4 }}>
+          {Array.from({ length: PIN_LEN }).map((_, i) => (
+            <div key={i} className={`pin-dot ${i < pin.length ? "filled" : ""} ${shake ? "error" : ""}`} />
+          ))}
+        </motion.div>
 
-          {/* PIN dots */}
-          <div className="pin-dots">
-            {Array.from({ length: PIN_LEN }).map((_, i) => (
-              <div
-                key={i}
-                className={`pin-dot ${i < pin.length ? "filled" : ""} ${shake && i < pin.length ? "error" : ""}`}
-              />
-            ))}
-          </div>
+        {/* Error / Loading */}
+        <div className="login-feedback">
+          <AnimatePresence mode="wait">
+            {error && !loading && (
+              <motion.div className="login-error" key="err"
+                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                {error}
+              </motion.div>
+            )}
+            {loading && (
+              <motion.div className="login-loading" key="load"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <div className="spinner" /> Memverifikasi...
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-          {/* Numpad */}
-          <div className="numpad">
-            {NUMPAD.flat().map((key, i) => {
-              if (key === "del") return (
-                <button
-                  key={i}
-                  className="num-btn del"
-                  onClick={() => handleKey("del")}
-                  disabled={loading || pin.length === 0}
-                >
-                  ⌫
-                </button>
-              );
-
-              if (key === "✓") return (
-                <button
-                  key={i}
-                  className="num-btn submit"
-                  onClick={() => handleKey("✓")}
-                  disabled={loading || pin.length < 4}
-                >
-                  ✓
-                </button>
-              );
-
-              if (key === "0") return (
-                <button
-                  key={i}
-                  className="num-btn zero"
-                  onClick={() => handleKey("0")}
-                  disabled={loading}
-                >
-                  0
-                </button>
-              );
-
-              return (
-                <button
-                  key={i}
-                  className="num-btn"
-                  onClick={() => handleKey(key)}
-                  disabled={loading}
-                >
-                  {key}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Error */}
-          {error && !loading && (
-            <div className="login-error">{error}</div>
-          )}
-
-          {/* Loading */}
-          {loading && (
-            <div className="login-loading">
-              <div className="spinner" />
-              Memverifikasi...
-            </div>
-          )}
-
+        {/* Numpad */}
+        <div className="numpad">
+          {NUMPAD.flat().map((key, i) => {
+            const isDel    = key === "del";
+            const isOk     = key === "ok";
+            const disabled = loading || (isDel && pin.length === 0) || (isOk && pin.length < 4);
+            return (
+              <button key={i}
+                className={`num-btn ${isDel ? "del" : isOk ? "submit" : ""}`}
+                onClick={() => handleKey(key)}
+                disabled={disabled}>
+                {isDel ? <Delete size={18} /> : isOk ? <Check size={18} /> : key}
+              </button>
+            );
+          })}
         </div>
 
         {/* Footer */}
         <div className="login-footer">
           <div className="login-footer-text">Bisa juga ketik PIN lewat keyboard</div>
           <a href="/" className="login-footer-link">
-            🍳 Buka Kitchen Display
+            <UtensilsCrossed size={13} /> Kitchen Display
           </a>
         </div>
 
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -42,9 +42,9 @@ export default function Sidebar({ children }) {
 
         {/* Brand */}
         <div className="sidebar-brand">
-          <div className="sidebar-brand-mark">PC</div>
+          <div className="sidebar-brand-mark">0ng</div>
           <div className="sidebar-brand-text">
-            <div className="sidebar-brand-name">Pos Caffe</div>
+            <div className="sidebar-brand-name">oE nongki</div>
             <div className="sidebar-brand-sub">{role === "admin" ? "Admin Panel" : "Waiter"}</div>
           </div>
         </div>
