@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../axiosInstance";
 import "./Kitchen.css";
 
-const socket = io("http://localhost:5000");
+const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
 
 const formatRupiah = (n) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
