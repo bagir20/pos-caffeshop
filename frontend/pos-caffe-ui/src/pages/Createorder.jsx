@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ShoppingCart, User, X, Minus, Plus, ChevronRight } from "lucide-react";
 import api from "../axiosInstance";
-import "./CreateOrder.css";
+import "./Createorder.css";
 
 const IMG_BASE = "http://localhost:5000";
 
