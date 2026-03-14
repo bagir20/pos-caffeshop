@@ -56,15 +56,4 @@ app.get('/', (req, res) => {
   });
 });
 
-// ─────────────────────────────────────────
-// Start Server
-// ─────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`✅ POS Demo Server running on port ${PORT}`);
-  console.log(`📦 Mode: IN-MEMORY (no database)`);
-  console.log(`🔑 Demo PINs - Admin: 1234 | Waiter: 5678`);
-});
-
 module.exports = app;
