@@ -17,12 +17,27 @@ const userRoutes = require('./routes/userRoutes');
 
 
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://pos-caffeshop-ay49.vercel.app"
+];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+const corsMode = function (origin, callback) {
+  if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 app.use(cors({
-  origin: [
-    "https://pos-caffeshop-ay49-c63vj2w7j-mdbagir20-2232s-projects.vercel.app"
-  ],
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"],
+  origin: corsMode,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
