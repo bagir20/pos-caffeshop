@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios"; // ← pakai axios biasa, bukan api instance
 
-const BASE = "http://localhost:5173/api"; // lewat Vite proxy
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5173/api"; // lewat Vite proxy atau langsung ke backend
 
 export default function PrivateRoute({ children, roles = [] }) {
   const [status, setStatus] = useState("loading");

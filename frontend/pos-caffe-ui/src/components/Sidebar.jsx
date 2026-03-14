@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../axiosInstance";
 import "./Sidebar.css";
 
 const NAV_ITEMS = [
@@ -21,7 +21,7 @@ export default function Sidebar({ children }) {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/auth/logout", {}, { withCredentials: true });
+      await api.post("/auth/logout");
     } catch { /* tetap logout */ }
     localStorage.removeItem("role");
     localStorage.removeItem("name");

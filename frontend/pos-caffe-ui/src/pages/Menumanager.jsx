@@ -5,7 +5,7 @@ import api from "../axiosInstance";
 import "./Menumanager.css";
 import imageCompression from "browser-image-compression";
 
-const IMG_BASE = "http://localhost:5000";
+const IMG_BASE = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : "http://localhost:5000";
 const EMPTY_FORM = { name: "", price: "", category_id: "", image_url: "" };
 
 const getInitials = (name = "") =>
@@ -85,26 +85,26 @@ export default function MenuManager() {
   const openDelete = (p) => { setDeleteTarget(p); setShowDelete(true); };
   const closeDelete = () => { setShowDelete(false); setDeleteTarget(null); };
 
- const handleImageChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const options = {
-    maxSizeMB: 0.5,        // maks 500KB
-    maxWidthOrHeight: 800, // resize kalau lebih dari 800px
-    useWebWorker: true,
+    const options = {
+      maxSizeMB: 0.5,        // maks 500KB
+      maxWidthOrHeight: 800, // resize kalau lebih dari 800px
+      useWebWorker: true,
+    };
+
+    try {
+      const compressed = await imageCompression(file, options);
+      setImageFile(compressed);
+      setImagePreview(URL.createObjectURL(compressed));
+    } catch {
+      // fallback ke file original kalau kompres gagal
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
-
-  try {
-    const compressed = await imageCompression(file, options);
-    setImageFile(compressed);
-    setImagePreview(URL.createObjectURL(compressed));
-  } catch {
-    // fallback ke file original kalau kompres gagal
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-  }
-};
 
   const handleSave = async () => {
     if (!form.name.trim()) return showToast("Nama produk wajib diisi", "error");
