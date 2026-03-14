@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Delete, Check, UtensilsCrossed } from "lucide-react";
-import axios from "axios";
+import api from "../axiosInstance";
 import "./Login.css";
 
-const PIN_LEN = 6;
+const PIN_LEN = 4;
 const NUMPAD  = [["1","2","3"],["4","5","6"],["7","8","9"],["del","0","ok"]];
 
 export default function Login() {
@@ -16,7 +16,7 @@ export default function Login() {
   const navigate              = useNavigate();
 
   useEffect(() => {
-    axios.get("/api/auth/me", { withCredentials: true })
+   api.get("/auth/me")
       .then(res => navigate(res.data.user.role === "admin" ? "/laporan" : "/order", { replace: true }))
       .catch(() => {});
   }, [navigate]);
@@ -30,7 +30,7 @@ export default function Login() {
     if (pinVal.length < 4) return triggerError("PIN minimal 4 digit");
     setLoading(true); setError("");
     try {
-      const res = await axios.post("/api/auth/login", { pin: pinVal }, { withCredentials: true });
+      const res = await api.post("/auth/login", { pin: pinVal })
       const { user } = res.data;
       localStorage.setItem("role", user.role);
       localStorage.setItem("name", user.name);
