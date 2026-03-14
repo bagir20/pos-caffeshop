@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'https://pos-caffeshop-8tk48xgfw-mdbagir20-2232s-projects.vercel.app/api',
-  withCredentials: true,
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: false
 });
 
 export default api;
