@@ -17,12 +17,16 @@ const userRoutes = require('./routes/userRoutes');
 
 
 
-// CORS
 app.use(cors({
-  origin: true,
+  origin: [
+    "https://pos-caffeshop-ay49-c63vj2w7j-mdbagir20-2232s-projects.vercel.app"
+  ],
   methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"]
+  allowedHeaders: ["Content-Type","Authorization"],
+  credentials: true
 }));
+
+app.options('*', cors());
 
 // Middleware
 app.use(express.json());
