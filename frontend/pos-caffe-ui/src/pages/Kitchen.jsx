@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UtensilsCrossed, Zap, CheckCheck, ClipboardList, ArrowLeft } from "lucide-react";
-import { io } from "socket.io-client";
+
 import { useNavigate } from "react-router-dom";
 import api from "../axiosInstance";
 import "./Kitchen.css";
 
-const socket = io(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
+
 
 const formatRupiah = (n) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
@@ -34,16 +34,21 @@ export default function Kitchen() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
+ useEffect(() => {
+
+  const fetchOrders = () => {
     api.get("/orders")
       .then(res => setOrders(res.data))
       .finally(() => setLoading(false));
+  };
 
-    socket.on("newOrder", order => setOrders(prev => [order, ...prev]));
-    socket.on("orderUpdated", updatedOrder => setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o)));
+  fetchOrders();
 
-    return () => { socket.off("newOrder"); socket.off("orderUpdated"); };
-  }, []);
+  const interval = setInterval(fetchOrders, 5000); // refresh tiap 5 detik
+
+  return () => clearInterval(interval);
+
+}, []);
 
   const updateStatus = async (id, status) => {
     await api.put(`/orders/${id}/status`, { status });
