@@ -5,6 +5,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
+const app = express();
+
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -13,22 +15,18 @@ const reportRoutes = require('./routes/reportRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const userRoutes = require('./routes/userRoutes');
 
-const app = express();
 
-// ─────────────────────────────────────────
-// CORS (Allow frontend from Vercel or localhost)
-// ─────────────────────────────────────────
+
+// CORS
 app.use(cors({
-  origin: '*',
-  credentials: false
+  origin: true,
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"]
 }));
 
-// ─────────────────────────────────────────
 // Middleware
-// ─────────────────────────────────────────
 app.use(express.json());
 app.use(cookieParser());
-
 // ─────────────────────────────────────────
 // Routes
 // ─────────────────────────────────────────
