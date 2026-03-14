@@ -19,26 +19,9 @@ const pool = require("./config/db");
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://pos-caffeshop-ay49.vercel.app"
-];
-
-if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
-}
-
-const corsMode = function (origin, callback) {
-  if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-    callback(null, true);
-  } else {
-    callback(new Error('Not allowed by CORS'));
-  }
-};
-
 const io = new Server(server, {
   cors: {
-    origin: corsMode,
+    origin: "http://localhost:5173",
     credentials: true,
   },
 });
@@ -46,7 +29,7 @@ const io = new Server(server, {
 app.set('io', io);
 
 app.use(cors({
-  origin: corsMode,
+  origin: 'http://localhost:5173',
   credentials: true,
 }));
 app.use(express.json());
