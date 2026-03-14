@@ -5,7 +5,7 @@ import api from "../axiosInstance";
 import "./Menumanager.css";
 import imageCompression from "browser-image-compression";
 
-const IMG_BASE = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : "http://localhost:5000";
+const IMG_BASE = "http://localhost:5000";
 const EMPTY_FORM = { name: "", price: "", category_id: "", image_url: "" };
 
 const getInitials = (name = "") =>
