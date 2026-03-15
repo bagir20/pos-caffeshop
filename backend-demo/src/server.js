@@ -19,14 +19,20 @@ const userRoutes = require('./routes/userRoutes');
 
 app.use(cors({
   origin: [
-    "https://pos-caffeshop-ay49-c63vj2w7j-mdbagir20-2232s-projects.vercel.app"
+    "https://pos-caffeshop-u9m5.vercel.app",
+    // tambahkan juga kalau ada custom domain lain
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
-app.options('*', cors());
+app.options('*', cors({
+  origin: [
+    "https://pos-caffeshop-u9m5.vercel.app",
+  ],
+  credentials: true
+}));
 
 // Middleware
 app.use(express.json());
