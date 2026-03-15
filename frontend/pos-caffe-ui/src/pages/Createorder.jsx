@@ -4,7 +4,7 @@ import { Search, ShoppingCart, User, X, Minus, Plus, ChevronRight } from "lucide
 import api from "../axiosInstance";
 import "./Createorder.css";
 
-const IMG_BASE = "http://localhost:5000";
+const IMG_BASE = import.meta.env.VITE_IMG_BASE ?? "";
 
 const getInitials = (name = "") =>
   name.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase() || "?";

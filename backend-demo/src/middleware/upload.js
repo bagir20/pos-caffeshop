@@ -1,12 +1,25 @@
 const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-// Vercel tidak support disk storage → pakai memoryStorage
-// File upload diabaikan di demo mode (tidak tersimpan permanen)
-const storage = multer.memoryStorage();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'pos-caffe/products',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation: [{ width: 800, height: 800, crop: 'limit' }],
+  },
+});
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  limits: { fileSize: 2 * 1024 * 1024 },
 });
 
 module.exports = upload;

@@ -14,7 +14,8 @@ exports.getProducts = (req, res) => {
 exports.createProduct = (req, res) => {
   try {
     const { name, price, category_id } = req.body;
-    const image_url = req.file ? `/uploads/products/${req.file.filename}` : null;
+    // Cloudinary: URL ada di req.file.path
+    const image_url = req.file ? req.file.path : null;
 
     const newProduct = {
       id: store.nextId.products++,
@@ -41,8 +42,9 @@ exports.updateProduct = (req, res) => {
 
     if (idx === -1) return res.status(404).json({ message: 'Product tidak ditemukan' });
 
+    // Cloudinary: URL ada di req.file.path
     const image_url = req.file
-      ? `/uploads/products/${req.file.filename}`
+      ? req.file.path
       : req.body.image_url || store.products[idx].image_url;
 
     store.products[idx] = {
