@@ -15,22 +15,31 @@ const reportRoutes = require('./routes/reportRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const userRoutes = require('./routes/userRoutes');
 
-
-
 app.use(cors({
-  origin: [
-    "https://pos-caffeshop-u9m5.vercel.app",
-    // tambahkan juga kalau ada custom domain lain
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: function(origin, callback) {
+    const allowed = [
+      "https://pos-caffeshop-u9m5.vercel.app",
+    ];
+    // Allow semua subdomain vercel milik project ini
+    if (!origin || allowed.includes(origin) || origin.match(/https:\/\/pos-caffeshop-u9m5.*\.vercel\.app/)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
 app.options('*', cors({
-  origin: [
-    "https://pos-caffeshop-u9m5.vercel.app",
-  ],
+  origin: function(origin, callback) {
+    if (!origin || origin.match(/https:\/\/pos-caffeshop-u9m5.*\.vercel\.app/)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
