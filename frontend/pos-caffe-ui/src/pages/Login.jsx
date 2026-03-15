@@ -16,9 +16,11 @@ export default function Login() {
   const navigate              = useNavigate();
 
   useEffect(() => {
-   api.get("/auth/me")
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    api.get("/auth/me")
       .then(res => navigate(res.data.user.role === "admin" ? "/laporan" : "/order", { replace: true }))
-      .catch(() => {});
+      .catch(() => localStorage.removeItem("token"));
   }, [navigate]);
 
   const triggerError = (msg) => {
@@ -30,8 +32,9 @@ export default function Login() {
     if (pinVal.length < 4) return triggerError("PIN minimal 4 digit");
     setLoading(true); setError("");
     try {
-      const res = await api.post("/auth/login", { pin: pinVal })
-      const { user } = res.data;
+      const res = await api.post("/auth/login", { pin: pinVal });
+      const { user, token } = res.data;
+      localStorage.setItem("token", token);
       localStorage.setItem("role", user.role);
       localStorage.setItem("name", user.name);
       navigate(user.role === "admin" ? "/laporan" : "/order", { replace: true });

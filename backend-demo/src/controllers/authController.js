@@ -6,8 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'demo-secret-key-pos-caffeshop';
 exports.login = async (req, res) => {
   try {
     const { pin } = req.body;
-
-    // Demo mode: bandingkan PIN langsung (plain text)
     const matchedUser = store.users.find(u => u.pin_plain === pin);
 
     if (!matchedUser) {
@@ -20,19 +18,12 @@ exports.login = async (req, res) => {
       { expiresIn: '8h' }
     );
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
-      maxAge: 8 * 60 * 60 * 1000,
-    });
-
     res.json({
       message: 'Login berhasil',
+      token,
       user: { id: matchedUser.id, name: matchedUser.name, role: matchedUser.role },
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
