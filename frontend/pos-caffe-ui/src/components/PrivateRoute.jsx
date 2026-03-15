@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import axios from "axios"; // ← pakai axios biasa, bukan api instance
-
-const BASE = "http://localhost:5173/api"; // lewat Vite proxy
+import api from "../axiosInstance"; // ← ganti pakai api instance
 
 export default function PrivateRoute({ children, roles = [] }) {
   const [status, setStatus] = useState("loading");
   const [userRole, setUserRole] = useState("");
 
   useEffect(() => {
-    axios
-      .get(`${BASE}/auth/me`, { withCredentials: true })
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setStatus("fail");
+      return;
+    }
+
+    api
+      .get("/auth/me")
       .then((res) => {
         const role = res.data.user.role;
         localStorage.setItem("role", role);
@@ -19,6 +23,7 @@ export default function PrivateRoute({ children, roles = [] }) {
         setStatus("ok");
       })
       .catch(() => {
+        localStorage.removeItem("token");
         localStorage.removeItem("role");
         localStorage.removeItem("name");
         setStatus("fail");
