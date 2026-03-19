@@ -23,6 +23,8 @@ export default function Sidebar({ children }) {
     try {
       await axios.post("/api/auth/logout", {}, { withCredentials: true });
     } catch { /* tetap logout */ }
+    
+    localStorage.removeItem("token"); // ← tambah ini
     localStorage.removeItem("role");
     localStorage.removeItem("name");
     navigate("/login", { replace: true });

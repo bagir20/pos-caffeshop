@@ -32,7 +32,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.options('/{*path}', cors({
+app.options('*', cors({
   origin: function(origin, callback) {
     if (!origin || origin.match(/https:\/\/pos-caffeshop-u9m5.*\.vercel\.app/)) {
       callback(null, true);

@@ -6,29 +6,31 @@ export default function PrivateRoute({ children, roles = [] }) {
   const [status, setStatus] = useState("loading");
   const [userRole, setUserRole] = useState("");
 
-  useEffect(() => {
+ useEffect(() => {
+  const verify = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       setStatus("fail");
       return;
     }
 
-    api
-      .get("/auth/me")
-      .then((res) => {
-        const role = res.data.user.role;
-        localStorage.setItem("role", role);
-        localStorage.setItem("name", res.data.user.name);
-        setUserRole(role);
-        setStatus("ok");
-      })
-      .catch(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        localStorage.removeItem("name");
-        setStatus("fail");
-      });
-  }, []);
+    try {
+      const res = await api.get("/auth/me");
+      const role = res.data.user.role;
+      localStorage.setItem("role", role);
+      localStorage.setItem("name", res.data.user.name);
+      setUserRole(role);
+      setStatus("ok");
+    } catch {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("name");
+      setStatus("fail");
+    }
+  };
+
+  verify();
+}, []);
 
   if (status === "loading") {
     return (
