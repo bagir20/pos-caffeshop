@@ -18,7 +18,8 @@ const userRoutes = require('./routes/userRoutes');
 app.use(cors({
   origin: function(origin, callback) {
     const allowed = [
-      "https://pos-caffeshop-u9m5.vercel.app",
+      'https://pos-caffeshop.vercel.app',
+    'https://bagir-pos-caffe.vercel.app'
     ];
     // Allow semua subdomain vercel milik project ini
     if (!origin || allowed.includes(origin) || origin.match(/https:\/\/pos-caffeshop-u9m5.*\.vercel\.app/)) {
