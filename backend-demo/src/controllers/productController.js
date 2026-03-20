@@ -1,4 +1,5 @@
 const store = require('../config/db');
+import { supabase } from '../lib/supabase.js'
 
 // Helper: gabungkan produk dengan nama kategori
 const withCategory = (product) => {
@@ -10,6 +11,16 @@ exports.getProducts = (req, res) => {
   const products = store.products.map(withCategory);
   res.json(products);
 };
+
+export async function getProducts(req, res) {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+
+  if (error) return res.status(500).json(error)
+
+  res.json(data)
+}
 
 exports.createProduct = (req, res) => {
   try {

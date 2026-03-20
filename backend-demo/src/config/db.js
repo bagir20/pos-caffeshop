@@ -7,23 +7,7 @@ const store = {
     { id: 8, name: 'Dessert' },
   ],
 
-  products: [
-    { id: 1,  name: 'Espresso',      price: 18000, category_id: 5, image_url: null, is_available: true },
-    { id: 2,  name: 'Latte',         price: 22000, category_id: 5, image_url: null, is_available: true },
-    { id: 3,  name: 'Cappuccino',    price: 22000, category_id: 5, image_url: null, is_available: true },
-    { id: 4,  name: 'Matcha Latte',  price: 25000, category_id: 6, image_url: null, is_available: true },
-    { id: 11, name: 'Chocolate',     price: 23000, category_id: 6, image_url: null, is_available: true },
-    { id: 5,  name: 'French Fries',  price: 20000, category_id: 4, image_url: null, is_available: true },
-    { id: 15, name: 'Chicken Nugget',price: 22000, category_id: 4, image_url: null, is_available: true },
-    { id: 16, name: 'Onion Ring',    price: 20000, category_id: 4, image_url: null, is_available: true },
-    { id: 6,  name: 'Nasi Goreng',   price: 30000, category_id: 7, image_url: null, is_available: true },
-    { id: 13, name: 'Chicken Katsu', price: 32000, category_id: 7, image_url: null, is_available: true },
-    { id: 17, name: 'Cheese Cake',   price: 25000, category_id: 8, image_url: null, is_available: true },
-    { id: 18, name: 'Brownies',      price: 22000, category_id: 8, image_url: null, is_available: true },
-    { id: 19, name: 'Ice Cream',     price: 18000, category_id: 8, image_url: null, is_available: true },
-    { id: 20, name: 'Waffle',        price: 24000, category_id: 8, image_url: null, is_available: true },
-    { id: 21, name: 'Pancake',       price: 23000, category_id: 8, image_url: null, is_available: true },
-  ],
+  // ❌ HAPUS products
 
   orders: [],
   orderItems: [],
@@ -34,7 +18,7 @@ const store = {
   ],
 
   nextId: {
-    products: 22,
+    // ❌ products dihapus
     orders: 1,
     orderItems: 1,
   },
