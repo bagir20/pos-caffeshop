@@ -1,64 +1,103 @@
+const { supabase } = require('../lib/supabase.js');
 const store = require('../config/db');
 
-exports.createOrder = (req, res) => {
+// ✅ CREATE ORDER
+exports.createOrder = async (req, res) => {
   try {
-    const { table_number, items } = req.body;
+    const { table_number, items, payment_method } = req.body;
 
-    const order = {
-      id: store.nextId.orders++,
-      table_number,
-      status: 'pending',
-      total: 0,
-      created_at: new Date().toISOString(),
-    };
+    // Ambil semua products dari Supabase
+    const { data: products, error: productError } = await supabase
+      .from('products')
+      .select('*');
 
+    if (productError) throw productError;
+
+    // Hitung total
     let total = 0;
-    const orderItems = [];
+    const orderItemsData = [];
 
     for (const item of items) {
-      const product = store.products.find(p => p.id === Number(item.product_id));
+      const product = products.find(p => p.id === Number(item.product_id));
       if (!product) continue;
 
-      const price = product.price;
-      const subtotal = price * item.quantity;
+      const subtotal = product.price * item.quantity;
       total += subtotal;
 
-      const oi = {
-        id: store.nextId.orderItems++,
-        order_id: order.id,
+      orderItemsData.push({
         product_id: product.id,
         quantity: item.quantity,
-        price,
-      };
-      orderItems.push(oi);
-      store.orderItems.push(oi);
+        price: product.price,
+      });
     }
 
-    order.total = total;
-    store.orders.push(order);
+    // Insert order ke Supabase
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert([{ table_number, status: 'pending', payment_method: payment_method || null, total }])
+      .select()
+      .single();
 
-    // Emit socket.io event kalau ada
+    if (orderError) throw orderError;
+
+    // Insert order_items ke Supabase
+    const itemsWithOrderId = orderItemsData.map(item => ({
+      ...item,
+      order_id: orderData.id,
+    }));
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(itemsWithOrderId);
+
+    if (itemsError) throw itemsError;
+
+    // Emit socket.io event
     try {
       const io = req.app.get('io');
-      if (io) io.emit('newOrder', { id: order.id, table_number, status: 'pending', total });
+      if (io) io.emit('newOrder', {
+        id: orderData.id,
+        table_number,
+        status: 'pending',
+        total,
+      });
     } catch (_) {}
 
-    res.json({ message: 'Order created', order_id: order.id, total });
+    res.json({ message: 'Order created', order_id: orderData.id, total });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-exports.getOrders = (req, res) => {
-  const ordersWithItems = store.orders
-    .slice()
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    .map(order => {
-      const items = store.orderItems
+// ✅ GET ALL ORDERS
+exports.getOrders = async (req, res) => {
+  try {
+    const { data: orders, error: ordersError } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (ordersError) throw ordersError;
+
+    // Ambil semua order_items sekaligus
+    const orderIds = orders.map(o => o.id);
+
+    const { data: orderItems, error: itemsError } = await supabase
+      .from('order_items')
+      .select('*')
+      .in('order_id', orderIds.length ? orderIds : [0]);
+
+    if (itemsError) throw itemsError;
+
+    // Ambil products untuk nama produk
+    const { data: products } = await supabase.from('products').select('id, name');
+
+    const ordersWithItems = orders.map(order => {
+      const items = orderItems
         .filter(oi => oi.order_id === order.id)
         .map(oi => {
-          const product = store.products.find(p => p.id === oi.product_id);
+          const product = products.find(p => p.id === oi.product_id);
           return {
             name: product ? product.name : 'Unknown',
             qty: oi.quantity,
@@ -68,33 +107,53 @@ exports.getOrders = (req, res) => {
       return { ...order, items };
     });
 
-  res.json(ordersWithItems);
+    res.json(ordersWithItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 };
 
-exports.getOrderDetail = (req, res) => {
-  const { id } = req.params;
-  const items = store.orderItems
-    .filter(oi => oi.order_id === Number(id))
-    .map(oi => {
-      const product = store.products.find(p => p.id === oi.product_id);
-      return {
-        name: product ? product.name : 'Unknown',
-        quantity: oi.quantity,
-        price: oi.price,
-      };
-    });
-  res.json(items);
+// ✅ GET ORDER DETAIL
+exports.getOrderDetail = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data: items, error } = await supabase
+      .from('order_items')
+      .select('*, products(name)')
+      .eq('order_id', id);
+
+    if (error) throw error;
+
+    const result = items.map(oi => ({
+      name: oi.products ? oi.products.name : 'Unknown',
+      quantity: oi.quantity,
+      price: oi.price,
+    }));
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 };
 
-exports.updateOrderStatus = (req, res) => {
+// ✅ UPDATE ORDER STATUS
+exports.updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    const order = store.orders.find(o => o.id === Number(id));
-    if (!order) return res.status(404).json({ message: 'Order tidak ditemukan' });
+    const { data: order, error } = await supabase
+      .from('orders')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      .single();
 
-    order.status = status;
+    if (error) throw error;
+    if (!order) return res.status(404).json({ message: 'Order tidak ditemukan' });
 
     try {
       const io = req.app.get('io');
